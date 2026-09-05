@@ -1,10 +1,18 @@
 _dotnet_switch_completions() {
   local cur_word="${COMP_WORDS[COMP_CWORD]}"
+  local flags="-h --help -l --list -c --channels -i --install"
+  local sdks=$(dotnet --list-sdks 2>/dev/null | awk '{print $1}')
+  
   if [[ "$cur_word" == -* ]]; then
-    COMPREPLY=( $(compgen -W "-h --help -l --list -c --channels -i --install" -- "$cur_word") )
+    # User typed a hyphen, only suggest flags
+    COMPREPLY=( $(compgen -W "$flags" -- "$cur_word") )
+  elif [[ -z "$cur_word" ]]; then
+    # Input is completely empty, show flags AND available SDKs
+    COMPREPLY=( $(compgen -W "$flags $sdks" -- "$cur_word") )
   else
-    local sdks=$(dotnet --list-sdks 2>/dev/null | awk '{print $1}')
+    # User typed a number/string, only search SDK versions
     COMPREPLY=( $(compgen -W "$sdks" -- "$cur_word") )
   fi
 }
+
 complete -F _dotnet_switch_completions dotnetswitch
