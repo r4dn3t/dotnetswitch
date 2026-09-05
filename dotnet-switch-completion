@@ -1,0 +1,10 @@
+_dotnet_switch_completions() {
+  local cur_word="${COMP_WORDS[COMP_CWORD]}"
+  if [[ "$cur_word" == -* ]]; then
+    COMPREPLY=( $(compgen -W "-h --help -l --list -c --channels -i --install" -- "$cur_word") )
+  else
+    local sdks=$(dotnet --list-sdks 2>/dev/null | awk '{print $1}')
+    COMPREPLY=( $(compgen -W "$sdks" -- "$cur_word") )
+  fi
+}
+complete -F _dotnet_switch_completions dotnetswitch
